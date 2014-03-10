@@ -27,7 +27,6 @@
   </scm>
 
   <properties>
-    <rpm.release>1</rpm.release>
     <zookeeper.host>localhost</zookeeper.host>
     <zookeeper.port>2192</zookeeper.port>
   </properties>
@@ -88,7 +87,6 @@
             <group>Comcast Open Source</group>
             <copyright>Comcast Open Source - 2014</copyright>
             <prefix>/opt</prefix>
-            <release>${rpm.release}</release>
           </configuration>
         </plugin>
         <plugin>
