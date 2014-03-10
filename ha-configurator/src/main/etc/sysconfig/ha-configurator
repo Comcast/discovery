@@ -1,0 +1,10 @@
+# Registration Agent configuration
+
+INSTALL_PREFIX=@REPLACE_RPM_PREFIX@
+JAVA_OPTS="-Xms256M -Xmx384M"
+
+## These variables are sourced via "facter" if not defined
+##
+## Zookeeper connection string allows multiple host specifications
+# zookeeper_connection=localhost:2181
+

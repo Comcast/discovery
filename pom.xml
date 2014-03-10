@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.comcast.tvx</groupId>
+  <artifactId>discovery</artifactId>
+  <name>Discovery Parent POM</name>
+  <version>1.2-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <developers>
+    <developer>
+      <name>JC Chan</name>
+      <organization>Comcast Open Source</organization>
+    </developer>
+  </developers>
+
+  <modules>
+    <module>discovery-client</module>
+    <module>ha-configurator</module>
+  </modules>
+
+  <scm>
+    <connection>scm:git:https://github.com/Comcast/discovery</connection>
+    <developerConnection>scm:git:https://github.com/Comcast/discovery</developerConnection>
+    <url>https://github.com/Comcast/discovery</url>
+  </scm>
+
+  <properties>
+    <rpm.release>1</rpm.release>
+    <zookeeper.host>localhost</zookeeper.host>
+    <zookeeper.port>2192</zookeeper.port>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>1.6.4</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+        <version>1.6.4</version>
+      </dependency>
+      <dependency>
+        <groupId>com.comcast.tvx</groupId>
+        <artifactId>discovery-client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <profiles>
+    <profile>
+      <id>rpm.build</id>
+      <activation>
+        <os>
+          <family>linux</family>
+        </os>
+      </activation>
+      <modules>
+        <module>reagent</module>
+      </modules>
+    </profile>
+  </profiles>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>rpm-maven-plugin</artifactId>
+          <!-- We need 2.1-alpha-2 or later to deal with spaces in filenames. -->
+          <version>2.1-alpha-2</version>
+          <extensions>true</extensions>
+          <configuration>
+            <defineStatements>
+              <defineStatement>AutoReqProv: no</defineStatement>
+              <defineStatement>__jar_repack %{nil}</defineStatement>
+              <defineStatement>__os_install_post %{nil}</defineStatement>
+            </defineStatements>
+            <defaultUsername>root</defaultUsername>
+            <defaultGroupname>root</defaultGroupname>
+            <defaultDirmode>755</defaultDirmode>
+            <defaultFilemode>644</defaultFilemode>
+            <group>Comcast Open Source</group>
+            <copyright>Comcast Open Source - 2014</copyright>
+            <prefix>/opt</prefix>
+            <release>${rpm.release}</release>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>com.objectdriven.maven</groupId>
+          <artifactId>maven-zookeeper-plugin</artifactId>
+          <version>1.0-SNAPSHOT</version>
+          <configuration>
+            <port>${zookeeper.port}</port>
+          </configuration>
+          <executions>
+            <execution>
+              <id>start-zookeeper</id>
+              <phase>pre-integration-test</phase>
+              <goals>
+                <goal>start</goal>
+              </goals>
+            </execution>
+            <execution>
+              <id>stop-zookeeper</id>
+              <phase>post-integration-test</phase>
+              <goals>
+                <goal>stop</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+</project>

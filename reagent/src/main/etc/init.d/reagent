@@ -1,0 +1,107 @@
+#!/bin/sh
+#
+# Registration Agent
+# chkconfig: 345 91 9
+# description: Registration Agent
+
+# processname: reagent 
+# pidfile: /var/run/reagent/reagent.pid
+#
+### BEGIN INIT INFO
+# Provides: Registration Agent
+# Description:  Registration Agent
+### END INIT INFO
+
+NAME=reagent
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+[ -e /etc/sysconfig/$NAME ] && . /etc/sysconfig/$NAME
+
+DESC="Registration Agent"
+PIDFILE=/var/run/$NAME/$NAME.pid
+LOCKFILE=/var/lock/subsys/$NAME
+SCRIPTNAME=/etc/init.d/$NAME
+SERVER_HOME=$INSTALL_PREFIX/$NAME
+
+prog=${NAME}.sh
+
+start() {
+    rh_status_q
+    if [ $? -eq 0 ]
+    then
+        echo "$NAME is already running"
+        return 1
+    fi
+    echo -n $"Starting $NAME: "
+    daemon --user=$NAME --pidfile=$PIDFILE "$SERVER_HOME/bin/$prog > /dev/null 2>&1"
+    echo
+}
+
+stop() {
+    stop_proc
+    RETVAL=$?
+    if [ $RETVAL == 0 ]; then
+        count=1
+        while [ $count -lt 30 ]; do
+            services_running || break
+            sleep 10
+            count=`expr $count + 1`
+        done
+        if [ $count -eq 30 ]; then
+            RETVAL=1
+        fi
+    fi
+    return $RETVAL
+}
+
+stop_proc() {
+    echo -n "Shutting down $NAME: "
+    killproc -p $PIDFILE $NAME
+    RETVAL=$?
+    echo
+    [ $RETVAL = 0 ] && rm -f ${LOCKFILE} ${PIDFILE}
+    return $RETVAL
+}
+
+services_running() {
+    serv_spec=`facter service_spec`
+    if [ -z "$serv_spec" ]; then
+        serv_spec=`egrep '^service_spec' /etc/sysconfig/reagent | sed -e 's/.*=//g'`
+    fi
+    grep_opts=`echo $serv_spec | sed -re 's/,/ /g' -e 's/[-_a-zA-Z]+/-e /g'`
+    netstat -an | grep ESTABLISHED | grep -l $grep_opts
+}
+
+rh_status() {
+    status -p $PIDFILE $NAME
+}
+
+rh_status_q() {
+    rh_status > /dev/null 2>&1
+}
+
+restart() {
+    stop
+    start
+}
+
+case "$1" in
+    start)
+        $1
+        ;;
+    stop)
+        $1
+        ;;
+    status)
+        rh_status
+        ;;
+    restart)
+        $1
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|status|restart}"
+        exit 2
+esac
+exit $? 

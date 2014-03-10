@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.comcast.tvx</groupId>
+    <artifactId>discovery</artifactId>
+    <version>1.2-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>discovery-client</artifactId>
+  <name>Discovery Client</name>
+  <packaging>jar</packaging>
+
+  <properties>
+    <zookeeper.host>localhost</zookeeper.host>
+    <zookeeper.port>2192</zookeeper.port>
+    <install.dir>/opt/xcal/cloud/discovery/client</install.dir>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.curator</groupId>
+      <artifactId>curator-recipes</artifactId>
+      <version>2.1.0-incubating</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.curator</groupId>
+      <artifactId>curator-x-discovery-server</artifactId>
+      <version>2.1.0-incubating</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.spullara.cli-parser</groupId>
+      <artifactId>cli-parser</artifactId>
+      <version>1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>6.8.5</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.objectdriven.maven</groupId>
+        <artifactId>maven-zookeeper-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <configuration>
+          <systemPropertyVariables>
+            <zookeeper.host>${zookeeper.host}</zookeeper.host>
+            <zookeeper.port>${zookeeper.port}</zookeeper.port>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

@@ -1,0 +1,25 @@
+# Registration Agent configuration
+
+INSTALL_PREFIX=@REPLACE_RPM_PREFIX@
+JAVA_OPTS="-Xms64M -Xmx64M"
+
+## These variables are sourced via "facter" if not defined
+##
+## Zookeeper connection string allows multiple host specifications
+# zookeeper_connection=localhost:2181
+#
+## Allows you to override local IP
+# ipaddress=169.254.1.1
+#
+## Service specification
+# service_spec=http:80,https:443
+#
+## Flavor or variant.  Prefixes service name in registration path.
+# flavor=release_x
+#
+## Region as defined by AWS, or data center
+# region=west1
+#
+## Availability zone
+# availability_zone=zone1
+

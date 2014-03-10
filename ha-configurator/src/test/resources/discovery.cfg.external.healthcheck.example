@@ -1,0 +1,35 @@
+frontend healthcheck
+#all checks are on 80
+    bind 0.0.0.0:80
+#acls determine whick backend to route to based on url start
+    acl is_80 path_beg -i  /healthCheck/80
+    acl is_14013 path_beg -i  /healthCheck/14013
+    acl is_18181 path_beg -i  /healthCheck/18181
+    
+    use_backend healthCheck_80 if is_80
+    use_backend healthCheck_14013 if is_14013
+    use_backend healthCheck_18181 if is_18181
+
+backend healthCheck_80
+    mode http
+    balance roundrobin  # Load Balancing algorithm
+    option forwardfor
+    option httpchk /healthCheck
+    reqrep ^([^\ ]*\ /)healthCheck\/80[/]?(.*)     \1healthCheck\2
+    server server1 127.0.0.1:81 check
+backend healthCheck_14013
+    mode http
+    balance roundrobin  # Load Balancing algorithm
+    option forwardfor
+    option httpchk /healthCheck
+    reqrep ^([^\ ]*\ /)healthCheck\/14013[/]?(.*)     \1healthCheck\2
+    server server1 whatsnew.xreapps.net:14013 check
+    
+backend healthCheck_18181
+    mode http
+    balance roundrobin  # Load Balancing algorithm
+    option forwardfor
+    option httpchk /healthCheck
+    reqrep ^([^\ ]*\ /)healthCheck\/18181[/]?(.*)     \1healthCheck\2
+    server server1 whatsnew.xreapps.net:18181 check
+

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This project contains no code. It is solely responsible for build configuration. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.comcast.tvx</groupId>
+    <artifactId>discovery</artifactId>
+    <version>1.2-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>reagent</artifactId>
+  <name>Registration Agent RPM</name>
+  <packaging>rpm</packaging>
+
+  <properties>
+    <rpm.dirname>${project.artifactId}</rpm.dirname>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.comcast.tvx</groupId>
+      <artifactId>discovery-client</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>rpm-maven-plugin</artifactId>
+        <configuration>
+          <requires>
+            <require>java &gt;= 1.6.0</require>
+            <require>facter</require>
+          </requires>
+          <mappings>
+            <mapping>
+              <directory>/opt/${rpm.dirname}/lib</directory>
+              <dependency />
+            </mapping>
+            <mapping>
+              <directory>/opt/${rpm.dirname}</directory>
+            </mapping>
+            <mapping>
+              <directory>/opt/${rpm.dirname}/bin</directory>
+              <filemode>755</filemode>
+              <sources>
+                <source>
+                  <location>${basedir}/src/main/rpmroot/bin</location>
+                </source>
+              </sources>
+            </mapping>
+            <mapping>
+              <directory>/opt/${rpm.dirname}/conf</directory>
+              <configuration>true</configuration>
+              <sources>
+                <source>
+                  <location>${basedir}/src/main/rpmroot/conf</location>
+                </source>
+              </sources>
+            </mapping>
+            <mapping>
+              <directory>/etc/rc.d/init.d</directory>
+              <directoryIncluded>false</directoryIncluded>
+              <filemode>755</filemode>
+              <sources>
+                <source>
+                  <location>${basedir}/src/main/etc/init.d/${project.artifactId}</location>
+                </source>
+              </sources>
+            </mapping>
+            <mapping>
+              <directory>/etc/sysconfig</directory>
+              <directoryIncluded>false</directoryIncluded>
+              <configuration>true</configuration>
+              <sources>
+                <source>
+                  <location>${basedir}/src/main/etc/sysconfig/${project.artifactId}</location>
+                </source>
+              </sources>
+            </mapping>
+            <mapping>
+              <directory>/var/log/${project.artifactId}</directory>
+              <filemode>755</filemode>
+              <username>${project.artifactId}</username>
+              <groupname>${project.artifactId}</groupname>
+            </mapping>
+            <mapping>
+              <directory>/var/run/${project.artifactId}</directory>
+              <filemode>755</filemode>
+              <username>${project.artifactId}</username>
+              <groupname>${project.artifactId}</groupname>
+            </mapping>
+          </mappings>
+          <preinstallScriptlet>
+            <scriptFile>src/main/scripts/pre-install.sh</scriptFile>
+          </preinstallScriptlet>
+          <postinstallScriptlet>
+            <scriptFile>src/main/scripts/post-install.sh</scriptFile>
+          </postinstallScriptlet>
+          <preremoveScriptlet>
+            <scriptFile>src/main/scripts/pre-remove.sh</scriptFile>
+          </preremoveScriptlet>
+          <postremoveScriptlet>
+            <scriptFile>src/main/scripts/post-remove.sh</scriptFile>
+          </postremoveScriptlet>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

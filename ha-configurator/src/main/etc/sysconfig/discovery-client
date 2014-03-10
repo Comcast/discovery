@@ -1,0 +1,10 @@
+# Discovery Client configuration
+
+INSTALL_PREFIX=@REPLACE_RPM_PREFIX@
+JAVA_OPTS="-Xms64M -Xmx64M"
+
+## These variables are sourced via "facter" if not defined
+##
+## Zookeeper connection string allows multiple host specifications
+# zookeeper_connection=localhost:2181
+

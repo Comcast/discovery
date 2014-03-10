@@ -1,0 +1,2 @@
+
+haproxy  ALL = NOPASSWD: /sbin/service haproxy reload

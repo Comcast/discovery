@@ -1,0 +1,81 @@
+#!/bin/sh
+#
+# Registration Agent
+# chkconfig: 345 91 9
+# description: Registration Agent
+
+# processname: ha-configurator 
+# pidfile: /var/run/ha-configurator/ha-configurator.pid
+#
+### BEGIN INIT INFO
+# Provides: Registration Agent
+# Description:  Registration Agent
+### END INIT INFO
+
+NAME=ha-configurator
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+[ -e /etc/sysconfig/$NAME ] && . /etc/sysconfig/$NAME
+
+DESC="HAProxy Configurator"
+PIDFILE=/var/run/$NAME/$NAME.pid
+LOCKFILE=/var/lock/subsys/$NAME
+SCRIPTNAME=/etc/init.d/$NAME
+SERVER_HOME=$INSTALL_PREFIX/$NAME
+
+prog=${NAME}.sh
+
+start() {
+    rh_status_q
+    if [ $? -eq 0 ]
+    then
+        echo "$NAME is already running"
+        return 1
+    fi
+    echo -n $"Starting $NAME: "
+    daemon --user=haproxy --pidfile=$PIDFILE "$SERVER_HOME/bin/$prog > /dev/null 2>&1"
+    echo
+}
+
+stop() {
+    echo -n "Shutting down $NAME: "
+    killproc -p $PIDFILE $prog
+    RETVAL=$?
+    echo
+    [ $RETVAL = 0 ] && rm -f ${LOCKFILE} ${PIDFILE}
+    return $RETVAL
+}
+
+rh_status() {
+    status -p $PIDFILE $NAME
+}
+
+rh_status_q() {
+    rh_status > /dev/null 2>&1
+}
+
+restart() {
+    stop
+    start
+}
+
+case "$1" in
+    start)
+        $1
+        ;;
+    stop)
+        $1
+        ;;
+    status)
+        rh_status
+        ;;
+    restart)
+        $1
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|status|restart}"
+        exit 2
+esac
+exit $? 
