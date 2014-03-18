@@ -68,6 +68,7 @@
   <build>
     <pluginManagement>
       <plugins>
+
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>rpm-maven-plugin</artifactId>
@@ -113,6 +114,16 @@
             </execution>
           </executions>
         </plugin>
+
+        <plugin>
+          <groupId>com.atlassian.maven.plugins</groupId>
+          <artifactId>maven-jgitflow-plugin</artifactId>
+          <version>1.0-alpha27p1</version>
+          <configuration>
+            <autoVersionSubmodules>true</autoVersionSubmodules>
+          </configuration>
+        </plugin>
+
       </plugins>
     </pluginManagement>
   </build>
