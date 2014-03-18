@@ -18,6 +18,7 @@
   <modules>
     <module>discovery-client</module>
     <module>ha-configurator</module>
+    <module>reagent</module>
   </modules>
 
   <scm>
@@ -29,6 +30,7 @@
   <properties>
     <zookeeper.host>localhost</zookeeper.host>
     <zookeeper.port>2192</zookeeper.port>
+    <releaseProfiles>skipTests</releaseProfiles>
   </properties>
 
   <dependencyManagement>
@@ -52,17 +54,51 @@
   </dependencyManagement>
 
   <profiles>
+
     <profile>
-      <id>rpm.build</id>
+      <id>integration-tests</id>
       <activation>
-        <os>
-          <family>linux</family>
-        </os>
+        <activeByDefault>true</activeByDefault>
       </activation>
-      <modules>
-        <module>reagent</module>
-      </modules>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>com.objectdriven.maven</groupId>
+              <artifactId>maven-zookeeper-plugin</artifactId>
+              <version>1.0-SNAPSHOT</version>
+              <configuration>
+                <port>${zookeeper.port}</port>
+              </configuration>
+              <executions>
+                <execution>
+                  <id>start-zookeeper</id>
+                  <phase>pre-integration-test</phase>
+                  <goals>
+                    <goal>start</goal>
+                  </goals>
+                </execution>
+                <execution>
+                  <id>stop-zookeeper</id>
+                  <phase>post-integration-test</phase>
+                  <goals>
+                    <goal>stop</goal>
+                  </goals>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
     </profile>
+
+    <profile>
+      <id>release-profile</id>
+      <properties>
+        <skipTests>true</skipTests>
+      </properties>
+    </profile>
+
   </profiles>
 
   <build>
@@ -90,36 +126,13 @@
             <prefix>/opt</prefix>
           </configuration>
         </plugin>
-        <plugin>
-          <groupId>com.objectdriven.maven</groupId>
-          <artifactId>maven-zookeeper-plugin</artifactId>
-          <version>1.0-SNAPSHOT</version>
-          <configuration>
-            <port>${zookeeper.port}</port>
-          </configuration>
-          <executions>
-            <execution>
-              <id>start-zookeeper</id>
-              <phase>pre-integration-test</phase>
-              <goals>
-                <goal>start</goal>
-              </goals>
-            </execution>
-            <execution>
-              <id>stop-zookeeper</id>
-              <phase>post-integration-test</phase>
-              <goals>
-                <goal>stop</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
 
         <plugin>
           <groupId>com.atlassian.maven.plugins</groupId>
           <artifactId>maven-jgitflow-plugin</artifactId>
           <version>1.0-alpha27p1</version>
           <configuration>
+            <allowSnapshots>true</allowSnapshots>
             <autoVersionSubmodules>true</autoVersionSubmodules>
           </configuration>
         </plugin>
