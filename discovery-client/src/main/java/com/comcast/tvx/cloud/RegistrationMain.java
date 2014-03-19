@@ -33,8 +33,8 @@ public class RegistrationMain {
     @Argument(alias = "z", description = "ZooKeeper connection string", required = true)
     private static String zooKeeperConnectionString = null;
 
-    @Argument(alias = "r", description = "Registration root path", required = false)
-    private static String registrationRoot = Constants.DEFAULT_REGISTRATION_ROOT;
+    @Argument(alias = "p", description = "Registration root path", required = false)
+    private static String registrationPath = Constants.DEFAULT_REGISTRATION_ROOT;
 
     @Argument(alias = "i", description = "IP of service to register", required = true)
     private static String ip = null;
@@ -75,7 +75,7 @@ public class RegistrationMain {
             return;
         }
 
-        String basePath = new StringBuilder().append(registrationRoot).append("/").append(region).append("/")
+        String basePath = new StringBuilder().append(registrationPath).append("/").append(region).append("/")
                 .append(availabilityZone).toString();
         final CuratorFramework curatorFramework = CuratorClient.getCuratorFramework(zooKeeperConnectionString);
         final RegistrationClient registrationClient = new RegistrationClient(curatorFramework, basePath, flavor, ip,
