@@ -190,13 +190,4 @@
     </profile>
   </profiles>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>com.objectdriven.maven</groupId>
-        <artifactId>maven-zookeeper-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
-
 </project>

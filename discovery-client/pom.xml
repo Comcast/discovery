@@ -50,22 +50,4 @@
     </dependency>
   </dependencies>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>com.objectdriven.maven</groupId>
-        <artifactId>maven-zookeeper-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <configuration>
-          <systemPropertyVariables>
-            <zookeeper.host>${zookeeper.host}</zookeeper.host>
-            <zookeeper.port>${zookeeper.port}</zookeeper.port>
-          </systemPropertyVariables>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-
 </project>

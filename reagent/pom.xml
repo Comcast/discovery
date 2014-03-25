@@ -11,7 +11,7 @@
 
   <artifactId>reagent</artifactId>
   <name>Registration Agent RPM</name>
-  <packaging>rpm</packaging>
+  <packaging>pom</packaging>
 
   <properties>
     <rpm.dirname>${project.artifactId}</rpm.dirname>
@@ -27,26 +27,6 @@
   <profiles>
 
     <profile>
-      <id>rpm.skip</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>rpm-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <phase>none</phase>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <profile>
       <id>rpm.build</id>
       <activation>
         <os>
@@ -58,6 +38,13 @@
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>rpm-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>attached-rpm</goal>
+                </goals>
+              </execution>
+            </executions>
             <configuration>
               <requires>
                 <require>java &gt;= 1.6.0</require>

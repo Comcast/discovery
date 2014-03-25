@@ -28,9 +28,11 @@
   </scm>
 
   <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <releaseProfiles>skip-it</releaseProfiles>
     <zookeeper.host>localhost</zookeeper.host>
     <zookeeper.port>2192</zookeeper.port>
-    <releaseProfiles>skipTests</releaseProfiles>
   </properties>
 
   <dependencyManagement>
@@ -61,42 +63,59 @@
         <activeByDefault>true</activeByDefault>
       </activation>
       <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>com.objectdriven.maven</groupId>
-              <artifactId>maven-zookeeper-plugin</artifactId>
-              <version>1.0-SNAPSHOT</version>
-              <configuration>
-                <port>${zookeeper.port}</port>
-              </configuration>
-              <executions>
-                <execution>
-                  <id>start-zookeeper</id>
-                  <phase>pre-integration-test</phase>
-                  <goals>
-                    <goal>start</goal>
-                  </goals>
-                </execution>
-                <execution>
-                  <id>stop-zookeeper</id>
-                  <phase>post-integration-test</phase>
-                  <goals>
-                    <goal>stop</goal>
-                  </goals>
-                </execution>
-              </executions>
-            </plugin>
-          </plugins>
-        </pluginManagement>
+        <plugins>
+
+          <plugin>
+            <groupId>com.objectdriven.maven</groupId>
+            <artifactId>maven-zookeeper-plugin</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <configuration>
+              <port>${zookeeper.port}</port>
+            </configuration>
+            <executions>
+              <execution>
+                <id>start-zookeeper</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>start</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>stop-zookeeper</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>stop</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+
+          <plugin>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>integration-test</goal>
+                  <goal>verify</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <systemPropertyVariables>
+                <zookeeper.host>${zookeeper.host}</zookeeper.host>
+                <zookeeper.port>${zookeeper.port}</zookeeper.port>
+              </systemPropertyVariables>
+            </configuration>
+          </plugin>
+
+        </plugins>
       </build>
     </profile>
 
     <profile>
-      <id>release-profile</id>
-      <properties>
-        <skipTests>true</skipTests>
-      </properties>
+      <!-- Just a profile to negate the default active profile.       -->
+      <!-- i.e.  Enable this to skip integration tests ( -Pskip-it ). -->
+      <id>skip-it</id>
     </profile>
 
   </profiles>
@@ -110,7 +129,6 @@
           <artifactId>rpm-maven-plugin</artifactId>
           <!-- We need 2.1-alpha-2 or later to deal with spaces in filenames. -->
           <version>2.1-alpha-2</version>
-          <extensions>true</extensions>
           <configuration>
             <defineStatements>
               <defineStatement>AutoReqProv: no</defineStatement>
@@ -135,6 +153,11 @@
             <allowSnapshots>true</allowSnapshots>
             <autoVersionSubmodules>true</autoVersionSubmodules>
           </configuration>
+        </plugin>
+
+        <plugin>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>2.13</version>
         </plugin>
 
       </plugins>
