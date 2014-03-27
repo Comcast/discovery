@@ -37,7 +37,7 @@ import static org.mockito.Mockito.when;
 
 public class HAConfiguratorIT {
 
-    Logger logger = LoggerFactory.getLogger(HAConfiguratorIT.class);
+    Logger log = LoggerFactory.getLogger(this.getClass());
 
     private static final String region = "region1";
     private static final String availabilityZone = "zonedOut";
@@ -49,7 +49,10 @@ public class HAConfiguratorIT {
     private List<RegistrationClient> clients = new ArrayList<RegistrationClient>();
 
     private String getConnectionString() {
-        return System.getProperty("zookeeper.connection", "localhost:2181");
+        String conn = System.getProperty("zookeeper.host", "localhost")
+                + ":" + System.getProperty("zookeeper.port", "2181");
+        log.debug("ZK connection string: " + conn);
+        return conn;
     }
 
     @Test(groups = { "scaleUp" })
@@ -60,7 +63,6 @@ public class HAConfiguratorIT {
                     .advertiseAvailability());
         }
         Thread.sleep(3000);
-
     }
 
     @Test(dependsOnGroups = "scaleUp")
@@ -76,7 +78,7 @@ public class HAConfiguratorIT {
         for (Integer key : mappings.keySet()) {
             result = key + ":" + mappings.get(key);
         }
-        logger.debug(result);
+        log.debug(result);
 
         HAProxyService haproxy = mock(HAProxyServiceController.class);
         when(haproxy.reload()).thenReturn(0);
