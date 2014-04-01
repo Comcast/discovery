@@ -111,7 +111,8 @@ public class RegistrationClientIT extends AbstractITBase {
     /**
      * Test should enforce unique name address port.
      */
-    @Test(expectedExceptions = RuntimeException.class)
+    @Test(expectedExceptions = RuntimeException.class,
+        expectedExceptionsMessageRegExp = "^Duplicate service being registered.*")
     public void testShouldEnforceUniqueNameAddressPort() {
         List<RegistrationClient> workers = new ArrayList<RegistrationClient>();
 
