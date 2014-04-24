@@ -29,7 +29,8 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.imps.CuratorFrameworkState;
 import org.apache.curator.x.discovery.ServiceDiscovery;
 import org.apache.curator.x.discovery.ServiceInstance;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Client used to query the central server for registered services.
@@ -46,7 +47,7 @@ public class DiscoveryClient {
     private List<String> filters;
 
     /** The logger. */
-    private Logger logger = Logger.getLogger(DiscoveryClient.class);
+    private Logger logger = LoggerFactory.getLogger(DiscoveryClient.class);
     
     private ServiceDiscoveryManager discoveryManager ;
     

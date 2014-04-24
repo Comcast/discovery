@@ -127,12 +127,18 @@ public class RegistrationClientIT extends AbstractITBase {
         }
     }
 
+    @Test(expectedExceptions = IllegalStateException.class)
+    public void testDuplicateAdvertisement() {
+        RegistrationClient client = new RegistrationClient(getCurator(), basePath, "y", "192.168.1.101", "dayview:10022");
+        client.advertiseAvailability();
+        client.advertiseAvailability();
+    }
+
     /**
      * Shutdown.
      */
     @AfterClass
     public void shutdown() {
-
         if (curatorFramework != null) {
             curatorFramework.close();
         }

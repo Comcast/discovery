@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.google.common.base.Throwables;
 
@@ -57,6 +58,9 @@ public final class RegistrationClient {
 
     /** Map of discovery objects and instances since there is a one to one correlation. */
     private Map<ServiceDiscovery<MetaData>, ServiceInstance<MetaData>> discoveryMap;
+
+    /** Maintain client state of what was called by clients of this object. */
+    private AtomicBoolean active = new AtomicBoolean(false);
 
     /** The log. */
     private Logger log = LoggerFactory.getLogger(this.getClass());
@@ -102,8 +106,11 @@ public final class RegistrationClient {
      */
     public RegistrationClient advertiseAvailability() {
 
-        try {
+        if (active.getAndSet(true)) {
+            throw new IllegalStateException("This client instance is already advertising.");
+        }
 
+        try {
             if (curatorFramework.getState() != CuratorFrameworkState.STARTED) {
                 curatorFramework.start();
             }
@@ -122,15 +129,12 @@ public final class RegistrationClient {
                 Collection<ServiceInstance<MetaData>> candidates = discovery.queryForInstances(serviceName);
 
                 for (ServiceInstance<MetaData> worker : candidates) {
-
                     if ((worker.getAddress().equals(service.getAddress())) && (worker.getPort() == port)) {
                         log.error("An instance of " + service + " already exists at: " +
                                   service.getAddress() + ":" + port);
                         throw new IllegalStateException("Duplicate service being registered. for service: " +
                                                         serviceName + " at: " + regPath);
                     }
-
-                    continue;
                 }
 
                 log.debug("registering service: " + serviceName);
@@ -139,6 +143,8 @@ public final class RegistrationClient {
                 log.info("registered service: " + serviceName);
 
             }
+        } catch (RuntimeException rte) {
+            throw rte;
         } catch (Exception e) {
             throw Throwables.propagate(e);
         }
@@ -172,6 +178,8 @@ public final class RegistrationClient {
      * @return  the registration client
      */
     public RegistrationClient deAdvertiseAvailability() {
+
+        active.set(false);
 
         for (Map.Entry<ServiceDiscovery<MetaData>, ServiceInstance<MetaData>> entry : discoveryMap.entrySet()) {
             ServiceInstance<MetaData> instance = entry.getValue();
