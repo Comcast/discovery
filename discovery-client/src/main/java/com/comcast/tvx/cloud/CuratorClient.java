@@ -34,22 +34,26 @@ public class CuratorClient {
 
     private static Logger log = LoggerFactory.getLogger(CuratorClient.class);
 
+    public static final int DEFAULT_MAX_SLEEP_MS = 60000;
+
     /**
      * Gets the curator framework.
      *
-     * @param   zooKeeperConnectionString  the zoo keeper connection string
-     * @param   basePath                   the base path
-     *
+     * @param   zkConnectionString  the zoo keeper connection string
      * @return  the curator framework
      */
-    public static CuratorFramework getCuratorFramework(String zooKeeperConnectionString) {
+    public static CuratorFramework getCuratorFramework(String zkConnectionString) {
+        return getCuratorFramework(getCuratorBuilder(zkConnectionString));
+    }
 
-        CuratorFramework curatorFramework =
-            CuratorFrameworkFactory.builder().connectionTimeoutMs(10 * 1000).retryPolicy(new ExponentialBackoffRetry(
-                                                                                             10,
-                                                                                             20)).connectString(
-                                       zooKeeperConnectionString).build();
-
+    /**
+     * Get a framework using a builder argument.
+     * 
+     * @param builder The builder to use.
+     * @return the curator framework
+     */
+    public static CuratorFramework getCuratorFramework(CuratorFrameworkFactory.Builder builder){
+        CuratorFramework curatorFramework = builder.build();
         curatorFramework.start();
 
         try {
@@ -59,6 +63,19 @@ public class CuratorClient {
         }
 
         return curatorFramework;
+    }
+
+    /**
+     * Get a builder object and allow user to override specific parameters.
+     * 
+     * @param zkConnectionString Zookeeper connection string.
+     * @return A builder.
+     */
+    public static CuratorFrameworkFactory.Builder getCuratorBuilder(String zkConnectionString) {
+        return CuratorFrameworkFactory.builder()
+                .connectionTimeoutMs(10 * 1000)
+                .retryPolicy(new ExponentialBackoffRetry(10, 20, DEFAULT_MAX_SLEEP_MS))
+                .connectString(zkConnectionString);
     }
 
     public static void registerForChanges(CuratorFramework curatorFramework,
