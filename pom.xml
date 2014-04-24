@@ -5,7 +5,7 @@
   <groupId>com.comcast.tvx</groupId>
   <artifactId>discovery</artifactId>
   <name>Discovery Parent POM</name>
-  <version>1.2.1-SNAPSHOT</version>
+  <version>1.4.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <developers>
@@ -37,6 +37,11 @@
 
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>log4j</groupId>
+        <artifactId>log4j</artifactId>
+        <version>1.2.16</version>
+      </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
