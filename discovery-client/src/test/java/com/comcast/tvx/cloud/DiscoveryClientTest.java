@@ -32,9 +32,8 @@ import org.testng.annotations.Test;
 
 import junit.framework.Assert;
 
-
-
 /**
+ * Test class.
  */
 public class DiscoveryClientTest {
 
@@ -54,7 +53,7 @@ public class DiscoveryClientTest {
     @Test
     public void testFindInstances() {
         DiscoveryClient client =
-            new TestableDiscoveryClient(null, "/some/slashes/", Arrays.asList("///xx/x")) {
+            new TestableDiscoveryClient(null, "/some/slashes/", "///xx/x") {
 
                 @Override
                 protected void processPath(Map<String, MetaData> instances, String currentRoot, String[] segments) {
@@ -69,21 +68,22 @@ public class DiscoveryClientTest {
 
     @Test
     public void testFindAllGlob() {
-        DiscoveryClient client = new TestableDiscoveryClient(null, basePath, Arrays.asList("/a/**", "/b/**"));
+        DiscoveryClient client = new TestableDiscoveryClient(null)
+            .usingBasePath(basePath).withCriteria("/a/**").withCriteria("/b/**");
         instances = client.findInstances();
         Assert.assertEquals(10, instances.size());
     }
 
     @Test
     public void testFindDirGlob() {
-        DiscoveryClient client = new TestableDiscoveryClient(null, basePath, Arrays.asList("/*/zz"));
+        DiscoveryClient client = new TestableDiscoveryClient(null, basePath, "/*/zz");
         instances = client.findInstances();
         Assert.assertEquals(2, instances.size());
     }
 
     @Test
     public void testFindSingleDir() {
-        DiscoveryClient client = new TestableDiscoveryClient(null, basePath, Arrays.asList("/b/bb"));
+        DiscoveryClient client = new TestableDiscoveryClient(null, basePath, "/b/bb");
         instances = client.findInstances();
         Assert.assertEquals(2, instances.size());
         Assert.assertTrue(instances.containsKey(basePath + "/" + "b/bb/bbb"));
@@ -93,8 +93,13 @@ public class DiscoveryClientTest {
 
     class TestableDiscoveryClient extends DiscoveryClient {
 
-        public TestableDiscoveryClient(CuratorFramework curatorFramework, String basePath, List<String> filters) {
-            super(curatorFramework, basePath, filters,new ServiceDiscoveryManagerImpl(curatorFramework));
+        public TestableDiscoveryClient(CuratorFramework curatorFramework) {
+            super(curatorFramework);
+        }
+
+        public TestableDiscoveryClient(CuratorFramework curatorFramework, String basePath, String filter) {
+            super(curatorFramework);
+            usingBasePath(basePath).withCriteria(filter);
         }
 
         /**

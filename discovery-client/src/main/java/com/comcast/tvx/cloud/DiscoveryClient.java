@@ -43,38 +43,48 @@ public class DiscoveryClient {
     /** The base path. */
     private String basePath;
 
-    /** The filters. */
-    private List<String> filters;
+    /** The filters. This must start off as empty due to additive filter building.*/
+    private List<String> filters = new ArrayList<String>();
 
     /** The logger. */
     private Logger logger = LoggerFactory.getLogger(DiscoveryClient.class);
-    
-    private ServiceDiscoveryManager discoveryManager ;
-    
-    /** The discovery cache. */
-   
+
+    private ServiceDiscoveryManager discoveryManager;
+
+    /**
+     * Builder style constructor.
+     * @param curatorFramework the curator framework
+     */
+    public DiscoveryClient(CuratorFramework curatorFramework) {
+        this.curatorFramework = curatorFramework;
+    }
+
     /**
      * Create a new instance of the client. This is the same as<br/>
-     * <code>new DiscoveryClient(curatorFramework, basePath, Arrays.asList(&quot;**&quot;));</code>
+     * <code>new DiscoveryClient(curatorFramework, basePath, Arrays.asList(&quot;**&quot;), discoveryManager);</code>
      *
      * @param curatorFramework the curator framework
      * @param basePath the base path
+     * @param discoveryManager Implementation for managing caches
+     * @deprecated
      */
-    public DiscoveryClient(CuratorFramework curatorFramework, String basePath,ServiceDiscoveryManager discoveryManager) {
-        this(curatorFramework, basePath, Arrays.asList("**"),discoveryManager);
+    public DiscoveryClient(CuratorFramework curatorFramework, String basePath, ServiceDiscoveryManager discoveryManager) {
+        this(curatorFramework, basePath, Arrays.asList("**"), discoveryManager);
     }
 
     /**
      * This method accepts a list of string expressions representing paths that the user is
      * interested in. Each element is used to construct a search path relative to the base path. Two
      * regular expressions are supported. One is the use of the wildcard character '*' in place of
-     * an entire path segment. (e.g. &quot;west1/*\/my_service&quot;). The other is the the Ant
+     * an entire path segment. (e.g. &quot;west1/*&#8203;/my_service&quot;). The other is the the Ant
      * style glob '**', but is only supported as the last path segment in an expression to indicate
      * all sub nodes. (e.g. &quot;west1/zone1/**&quot;)
      *
      * @param curatorFramework the curator framework
      * @param basePath the base path
      * @param filters the filters
+     * @param discoveryManager Implementation for managing caches
+     * @deprecated
      */
     public DiscoveryClient(CuratorFramework curatorFramework, String basePath, List<String> filters,
             ServiceDiscoveryManager discoveryManager) {
@@ -85,6 +95,53 @@ public class DiscoveryClient {
     }
 
     /**
+     * Fluent setter.  Required.
+     * @param basePath the base path
+     * @return
+     */
+    public DiscoveryClient usingBasePath(String basePath) {
+        this.basePath = basePath;
+        return this;
+    }
+
+    /**
+     * Fluent additive setter.  The given filter is added to a list of search paths.  Two
+     * regular expressions are supported. One is the use of the wildcard character '*' in place of
+     * an entire path segment. (e.g. &quot;west1/*&#8203;/my_service&quot;). The other is the the Ant
+     * style glob '**', but is only supported as the last path segment in an expression to indicate
+     * all sub nodes. (e.g. &quot;west1/zone1/**&quot;)
+     * 
+     * @param filter a regular expression filter when searching for matching nodes.
+     * @return this object instance
+     */
+    public DiscoveryClient withCriteria(String filter) {
+        filters.add(filter);
+        return this;
+    }
+
+    /**
+     * Fluent additive setter.  Each prototype object is converted to a filter and added to a search list.
+     * 
+     * @param prototype a prototype Service object
+     * @return
+     */
+    public DiscoveryClient withCriteria(Service prototype) {
+        filters.add(prototype.toString());
+        return this;
+    }
+
+    /**
+     * Fluent setter.  Has protected scope since I don't see a need for anyone to override the default.
+     * 
+     * @param discoveryManager the ServiceDiscoveryManager to use.
+     * @return
+     */
+    protected DiscoveryClient withDiscoveryManager(ServiceDiscoveryManager discoveryManager) {
+        this.discoveryManager = discoveryManager;
+        return this;
+    }
+
+    /**
      * Find instances based on the filters used to create this object.
      *
      * @return  A sorted map of full paths to a node, along with the MetaData stored in that node.
@@ -92,8 +149,9 @@ public class DiscoveryClient {
     public Map<String, MetaData> findInstances() {
         Map<String, MetaData> instances = new TreeMap<String, MetaData>();
 
-        try {
+        init();
 
+        try {
             for (String path : filters) {
                 logger.debug("checking entries with path filter: " + path);
 
@@ -120,10 +178,21 @@ public class DiscoveryClient {
      * Initialize this client instance.
      */
     protected void init() {
-
         // Initialize framework.
         if (curatorFramework.getState() != CuratorFrameworkState.STARTED) {
             curatorFramework.start();
+        }
+
+        if (basePath == null) {
+            throw new IllegalStateException("No basePath set.");
+        }
+
+        if (discoveryManager == null) {
+            discoveryManager = new ServiceDiscoveryManagerImpl(curatorFramework);
+        }
+
+        if (filters.size() == 0) {
+            filters.add("**");
         }
     }
 
@@ -240,13 +309,10 @@ public class DiscoveryClient {
      * @throws Exception the exception
      */
     protected void findChildren(Map<String, MetaData> instances, String directory) throws Exception {
-        
         ServiceDiscovery<MetaData> discovery =  discoveryManager.getDiscovery( directory );
-        
-        for (String name :discovery.queryForNames()) {
 
+        for (String name : discovery.queryForNames()) {
             try {
-
                 for (ServiceInstance<MetaData> instance : discovery.queryForInstances(name)) {
                     instances.put(directory + "/" + name + "/" + instance.getId(), instance.getPayload());
                 }
@@ -261,5 +327,4 @@ public class DiscoveryClient {
          */
         discoveryManager.prune();
     }
-
 }

@@ -73,7 +73,7 @@
           <plugin>
             <groupId>com.objectdriven.maven</groupId>
             <artifactId>maven-zookeeper-plugin</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0-TVX1</version>
             <configuration>
               <port>${zookeeper.port}</port>
             </configuration>
