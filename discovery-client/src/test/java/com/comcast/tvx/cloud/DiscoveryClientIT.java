@@ -16,16 +16,16 @@
 
 package com.comcast.tvx.cloud;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
-
-import static org.testng.Assert.*;
 
 /**
  * Integration tests.
@@ -43,9 +43,7 @@ public class DiscoveryClientIT extends AbstractITBase {
         workers.add(new RegistrationClient(getCurator(), basePath + "/a/b/c", "y", "127.0.0.2", "http:80")
                     .advertiseAvailability());
         
-        DiscoveryClient discovery = new DiscoveryClient(getCurator(), basePath,
-        new ServiceDiscoveryManagerImpl(getCurator())
-        );
+        DiscoveryClient discovery = new DiscoveryClient(getCurator()).usingBasePath(basePath);
         TreeMap<String, MetaData> services = new TreeMap<String, MetaData>();
         discovery.findSubNodes(services, basePath);
         assertEquals(services.size(), 3);
@@ -65,8 +63,7 @@ public class DiscoveryClientIT extends AbstractITBase {
                     .advertiseAvailability());
         workers.add(new RegistrationClient(getCurator(), basePath + "/a/b/c", "y", "127.0.0.1", "http:80")
                     .advertiseAvailability());
-        ServiceDiscoveryManager manager = new ServiceDiscoveryManagerImpl(null);
-        DiscoveryClient discovery = new DiscoveryClient(getCurator(), basePath, Arrays.asList("a"),manager);
+        DiscoveryClient discovery = new DiscoveryClient(getCurator()).usingBasePath(basePath).withCriteria("a");
         List<String> dirs = discovery.findDirectories(basePath + "/a");
         assertEquals(dirs.size(), 1);
         assertTrue(dirs.contains(basePath + "/a/b"));
@@ -96,8 +93,7 @@ public class DiscoveryClientIT extends AbstractITBase {
                     .advertiseAvailability());
 
         Map<String, MetaData> instances = new TreeMap<String, MetaData>();
-        ServiceDiscoveryManager manager = new ServiceDiscoveryManagerImpl(getCurator());
-        DiscoveryClient discovery = new DiscoveryClient(getCurator(), basePath, Arrays.asList("vanilla"),manager);
+        DiscoveryClient discovery = new DiscoveryClient(getCurator()).usingBasePath(basePath).withCriteria("vanilla");
         discovery.findChildren(instances, basePath + "/vanilla");
         assertEquals(instances.size(), 2);
 

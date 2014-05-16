@@ -125,7 +125,7 @@ public class DiscoveryClient {
      * @param prototype a prototype Service object
      * @return
      */
-    public DiscoveryClient withCriteria(Service prototype) {
+    public DiscoveryClient withCriteria(ServiceClassifier prototype) {
         filters.add(prototype.toString());
         return this;
     }

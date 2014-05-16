@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * Concrete listener for our even types.
+ * Concrete listener for our event types.
  *
  * @param <T>
  */
@@ -37,8 +37,7 @@ public class CuratorEventListener<T> implements CuratorListener {
     private RegistrationChangeHandler<T> handler;
     private String basePath;
 
-    public CuratorEventListener(RegistrationChangeHandler<T> handler,
-                                String basePath) {
+    public CuratorEventListener(RegistrationChangeHandler<T> handler, String basePath) {
         super();
         this.handler = handler;
         this.basePath = basePath;

@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
 import com.comcast.tvx.cloud.Constants;
 import com.comcast.tvx.cloud.CuratorClient;
 import com.comcast.tvx.cloud.DiscoveryClient;
-import com.comcast.tvx.cloud.ServiceDiscoveryManagerImpl;
 import com.google.common.base.Throwables;
 import com.sampullara.cli.Args;
 import com.sampullara.cli.Argument;
@@ -157,9 +156,12 @@ public class ConfiguratorMain {
         DiscoveryClient client = null;
 
         try {
-            client = new DiscoveryClient(curatorFramework, registrationRoot,
-                    parseFilters(validateAndConvertPath(filtersFile)),
-                    new ServiceDiscoveryManagerImpl(curatorFramework));
+            client = new DiscoveryClient(curatorFramework)
+                .usingBasePath(registrationRoot);
+            List<String> filters = parseFilters(validateAndConvertPath(filtersFile));
+            for (String filter : filters) {
+                client.withCriteria(filter);
+            }
         } catch (IOException e) {
             logger.error("An exception occurred processing the filtersFile: " + filtersFile + ", cannot continue", e);
             Throwables.propagate(e);
@@ -167,7 +169,14 @@ public class ConfiguratorMain {
         return client;
     }
 
-    protected static List<String> readLineOrientedFile(BufferedReader input) throws IOException {
+    /**
+     * Grab filters configuration and return a list of filters.
+     * 
+     * @param input BufferedReader from configuration.
+     * @return A service classifier.
+     * @throws IOException
+     */
+    protected static List<String> parseFilters(BufferedReader input) throws IOException {
         List<String> lines = new ArrayList<String>();
         String line = null;
 
@@ -182,9 +191,6 @@ public class ConfiguratorMain {
         return lines;
     }
 
-    protected static List<String> parseFilters(BufferedReader input) throws IOException {
-        return readLineOrientedFile(input);
-    }
     /**
      * Executed on every wake loop so new configuration can be picked up.
      * 
@@ -218,21 +224,9 @@ public class ConfiguratorMain {
     }
 
     /**
-     * Construct a list of HARules which can be rendered. This can be easily
-     * refactored to use a specialized parser with a richer HARule
-     * implementation.
-     * 
-     * @param services
-     * @param mappings
-     * 
-     * @return
-     */
-
-    /**
      * Clean up configuration file input line.
      * 
      * @param input
-     * 
      * @return
      */
     protected static String cleanLine(String input) {
@@ -245,7 +239,6 @@ public class ConfiguratorMain {
         String ret = input.trim();
 
         if (input.contains("#")) {
-
             // Strip trailing comments
             ret = Pattern.compile("\\s*?#.*$").matcher(ret).replaceAll("");
         }

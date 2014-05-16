@@ -24,6 +24,4 @@ public interface Constants {
 
     public static final String DEFAULT_REGISTRATION_ROOT = "/services";
 
-    public static final String PATH_QUEUE = DEFAULT_REGISTRATION_ROOT + "/path_events";
-
 }

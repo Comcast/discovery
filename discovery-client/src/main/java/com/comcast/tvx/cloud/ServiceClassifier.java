@@ -17,22 +17,23 @@
 package com.comcast.tvx.cloud;
 
 /**
- * This bean is a structured representation of a service that would be
- * registered with the RegistrationClient.
+ * This bean is a structured representation of a service that would be registered
+ * with the RegistrationClient.  This is not a concrete instance of something that
+ * is registered.  As such, not all fields are set to concrete values.
  * 
  */
-public class Service {
+public class ServiceClassifier {
 
     private String region = "*";
     private String zone = "*";
-    private String flavor = "*";
+    private String group = "*";
     private String name = "*";
 
     public String getRegion() {
         return region;
     }
 
-    public Service setRegion(String region) {
+    public ServiceClassifier setRegion(String region) {
         this.region = region;
         return this;
     }
@@ -41,17 +42,17 @@ public class Service {
         return zone;
     }
 
-    public Service setZone(String zone) {
+    public ServiceClassifier setZone(String zone) {
         this.zone = zone;
         return this;
     }
 
-    public String getFlavor() {
-        return flavor;
+    public String getGroup() {
+        return group;
     }
 
-    public Service setFlavor(String flavor) {
-        this.flavor = flavor;
+    public ServiceClassifier setGroup(String group) {
+        this.group = group;
         return this;
     }
 
@@ -59,18 +60,36 @@ public class Service {
         return name;
     }
 
-    public Service setName(String name) {
+    public ServiceClassifier setName(String name) {
         this.name = name;
         return this;
     }
 
-    @Override
-    public String toString() {
-        StringBuffer buff = new StringBuffer()
+    public String getRegistrationPath() {
+        if (zone.equalsIgnoreCase("*") || region.equalsIgnoreCase("*") || group.equalsIgnoreCase("*")) {
+            throw new IllegalArgumentException("Incomplete construction of Classifier.");
+        }
+
+        StringBuilder buff = new StringBuilder()
             .append(zone).append("/")
             .append(region).append("/")
-            .append(flavor).append("/")
-            .append(name);
+            .append(group);
+        return buff.toString();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder buff = new StringBuilder(zone);
+        if (!zone.equalsIgnoreCase("**")) {
+            buff.append("/").append(region);
+            if (!region.equalsIgnoreCase("**")) {
+                buff.append("/").append(group);
+                if (!group.equalsIgnoreCase("**")) {
+                    buff.append("/").append(name);
+                }
+            }
+        }
+
         return buff.toString();
     }
 
