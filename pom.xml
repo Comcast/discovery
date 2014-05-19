@@ -157,6 +157,9 @@
           <configuration>
             <allowSnapshots>true</allowSnapshots>
             <autoVersionSubmodules>true</autoVersionSubmodules>
+			<flowInitContext>
+			  <developBranchName>1.2.patch</developBranchName>
+			</flowInitContext>
           </configuration>
         </plugin>
 
