@@ -19,14 +19,15 @@ package com.comcast.tvx.cloud;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.queue.DistributedQueue;
 import org.apache.curator.framework.recipes.queue.QueueBuilder;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /*
  * Small helper to hide some noise and provide pleasing semantics to queue users
  */
 public class QueueUtils {
 
-    private static Logger log = Logger.getLogger(QueueUtils.class);
+    private static Logger log = LoggerFactory.getLogger(QueueUtils.class);
 
     public static DistributedQueue<String> getQueue(CuratorFramework curatorFramework, String queueName,
                                                     PathEventConsumer<String> consumer) throws Exception {

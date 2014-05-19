@@ -5,7 +5,7 @@
   <parent>
     <groupId>com.comcast.tvx</groupId>
     <artifactId>discovery</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.4</version>
   </parent>
 
   <artifactId>discovery-client</artifactId>
@@ -24,23 +24,29 @@
       <artifactId>slf4j-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.apache.curator</groupId>
       <artifactId>curator-recipes</artifactId>
-      <version>2.1.0-incubating</version>
+      <version>2.4.2</version>
     </dependency>
     <dependency>
       <groupId>org.apache.curator</groupId>
       <artifactId>curator-x-discovery-server</artifactId>
-      <version>2.1.0-incubating</version>
+      <version>2.4.2</version>
     </dependency>
     <dependency>
       <groupId>com.github.spullara.cli-parser</groupId>
       <artifactId>cli-parser</artifactId>
       <version>1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.testng</groupId>
@@ -49,23 +55,5 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>com.objectdriven.maven</groupId>
-        <artifactId>maven-zookeeper-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <artifactId>maven-failsafe-plugin</artifactId>
-        <configuration>
-          <systemPropertyVariables>
-            <zookeeper.host>${zookeeper.host}</zookeeper.host>
-            <zookeeper.port>${zookeeper.port}</zookeeper.port>
-          </systemPropertyVariables>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 
 </project>

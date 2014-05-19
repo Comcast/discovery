@@ -26,7 +26,9 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractITBase {
 
     /** The zk connection string. */
-    String zkConnectionString = System.getProperty("zookeeper.host") + ":" + System.getProperty("zookeeper.port");
+    String zkConnectionString = System.getProperty("zookeeper.host", "localhost")
+        + ":" + System.getProperty("zookeeper.port", "2181");
+
 
     /** The logger. */
     Logger log = LoggerFactory.getLogger(this.getClass());
