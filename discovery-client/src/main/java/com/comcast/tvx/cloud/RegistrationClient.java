@@ -65,6 +65,27 @@ public final class RegistrationClient {
     /** The log. */
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
+    /** Payload parameters." */
+    private Map<String, String> parameters;
+
+    /**
+     * Instantiates a new registration client.
+     *
+     * @param  curatorFramework  the curator framework
+     * @param  basePath          Zookeeper registration path
+     * @param  flavor            Application flavor of this client.
+     * @param  listenAddress     Local IP address
+     * @param  serviceSpec       A list of services and corresponding ports.
+     * @param  parameters        A map of optional payload parameters.
+     */
+    public RegistrationClient(CuratorFramework curatorFramework, String basePath,
+                              String flavor, String listenAddress,
+                              String serviceSpec,
+                              Map<String, String> parameters) {
+        this(curatorFramework, basePath, flavor, listenAddress, serviceSpec);
+        this.parameters = parameters;
+    }
+
     /**
      * Instantiates a new registration client.
      *
@@ -79,6 +100,7 @@ public final class RegistrationClient {
                               String serviceSpec) {
         this(curatorFramework, basePath, flavor, listenAddress, ServiceUtil.parseServiceSpec(serviceSpec));
     }
+
 
     /**
      * Instantiates a new registration client.
@@ -120,7 +142,7 @@ public final class RegistrationClient {
                 String regPath = constructRegistrationPath(basePath, flavor);
                 int port = entry.getValue().intValue();
                 ServiceDiscovery<MetaData> discovery = ServiceUtil.getDiscovery(regPath, curatorFramework);
-                ServiceInstance<MetaData> service = ServiceUtil.getServiceInstance(serviceName, port, listenAddress);
+                ServiceInstance<MetaData> service = ServiceUtil.getServiceInstance(serviceName, port, listenAddress, parameters);
 
                 /*
                  * Having >1 instance with of the same name with same listenAddress + listPort is

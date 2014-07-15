@@ -16,6 +16,7 @@
 
 package com.comcast.tvx.cloud;
 
+import java.util.Map;
 import java.util.UUID;
 
 import org.codehaus.jackson.annotate.JsonProperty;
@@ -42,6 +43,10 @@ public final class MetaData {
     /** The service namee. */
     @JsonProperty
     private String serviceName;
+
+    /** The parameter map. */
+    @JsonProperty
+    private Map<String, String> parameters;
 
     /**
      * Instantiates a new worker metadata.
@@ -106,4 +111,20 @@ public final class MetaData {
     public String getServiceName() {
         return serviceName;
     }
+
+    /**
+     * Gets the parameter map.
+     *
+     * @return  the parameter map
+     */
+    @JsonProperty
+    public Map<String, String> getParameters() { return parameters; }
+
+    /**
+     * Sets the parameter map.
+     * @param   parameters - The parameter map
+     * @return  void
+     */
+    @JsonProperty
+    public void setParameters(Map<String, String> parameters) { this.parameters = parameters; }
 }

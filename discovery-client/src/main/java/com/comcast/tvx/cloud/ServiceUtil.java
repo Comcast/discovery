@@ -73,8 +73,11 @@ public abstract class ServiceUtil {
      * @return  single instance of RegistrationClient
      * @throws  Exception  the exception
      */
-    protected static ServiceInstance<MetaData> getServiceInstance(String serviceName, int servicePort,
-                                                                  String serviceAddress) throws Exception {
+    protected static ServiceInstance<MetaData> getServiceInstance(
+            String serviceName,
+            int servicePort,
+            String serviceAddress,
+            Map<String, String> parameters) throws Exception {
 
         ServiceInstanceBuilder<MetaData> builder = ServiceInstance.builder();
 
@@ -82,9 +85,11 @@ public abstract class ServiceUtil {
         // ethernet device
         String registerAddress = (serviceAddress == null) ? builder.build().getAddress() : serviceAddress;
 
-        builder.name(serviceName).payload(new MetaData(UUID.randomUUID(), registerAddress, servicePort, serviceName)).id(
-                   registerAddress + ":" + String.valueOf(servicePort)).serviceType(ServiceType.DYNAMIC).address(
-                   registerAddress).port(servicePort);
+        MetaData metadata = new MetaData(UUID.randomUUID(), registerAddress, servicePort, serviceName);
+        metadata.setParameters(parameters);
+
+        builder.name(serviceName).payload(metadata).id(registerAddress + ":" +
+                String.valueOf(servicePort)).serviceType(ServiceType.DYNAMIC).address(registerAddress).port(servicePort);
 
         return builder.build();
     }
