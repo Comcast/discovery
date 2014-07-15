@@ -18,17 +18,17 @@ package com.comcast.tvx.cloud;
 
 import com.google.common.base.Throwables;
 
+import org.apache.curator.CuratorZookeeperClient;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.imps.CuratorFrameworkState;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.utils.EnsurePath;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The Class CuratorClient.
+ * CuratorClient helper class.
  */
 public class CuratorClient {
 
@@ -82,12 +82,15 @@ public class CuratorClient {
                                           final RegistrationChangeHandler<MetaData> handler,
                                           String... basePaths) {
 
+        CuratorZookeeperClient client = null;
+
         if (curatorFramework.getState() != CuratorFrameworkState.STARTED) {
             curatorFramework.start();
         }
 
         try {
-            curatorFramework.getZookeeperClient().blockUntilConnectedOrTimedOut();
+            client = curatorFramework.getZookeeperClient();
+            client.blockUntilConnectedOrTimedOut();
         } catch (InterruptedException e) {
             Throwables.propagate(e);
         }
@@ -97,7 +100,9 @@ public class CuratorClient {
             log.debug("Adding watched path: " + basePath);
 
             try {
-                new EnsurePath(basePath).ensure(curatorFramework.getZookeeperClient());
+                new EnsurePath(basePath).ensure(client);
+                CuratorEventListener<MetaData> eventBridge = new CuratorEventListener<MetaData>(handler, basePath);
+                curatorFramework.getCuratorListenable().addListener(eventBridge);
             } catch (Exception e) {
                 Throwables.propagate(e);
             }
