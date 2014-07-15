@@ -118,7 +118,9 @@ public final class MetaData {
      * @return  the parameter map
      */
     @JsonProperty
-    public Map<String, String> getParameters() { return parameters; }
+    public Map<String, String> getParameters() {
+        return parameters;
+    }
 
     /**
      * Sets the parameter map.
@@ -126,5 +128,7 @@ public final class MetaData {
      * @return  void
      */
     @JsonProperty
-    public void setParameters(Map<String, String> parameters) { this.parameters = parameters; }
+    public void setParameters(Map<String, String> parameters) {
+        this.parameters = parameters;
+    }
 }
