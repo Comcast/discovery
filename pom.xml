@@ -5,7 +5,7 @@
   <groupId>com.comcast.tvx</groupId>
   <artifactId>discovery</artifactId>
   <name>Discovery Parent POM</name>
-  <version>1.4.0-SNAPSHOT</version>
+  <version>1.4.1</version>
   <packaging>pom</packaging>
 
   <developers>
@@ -157,6 +157,9 @@
           <configuration>
             <allowSnapshots>true</allowSnapshots>
             <autoVersionSubmodules>true</autoVersionSubmodules>
+			<flowInitContext>
+			  <developBranchName>1.2.patch</developBranchName>
+			</flowInitContext>
           </configuration>
         </plugin>
 
