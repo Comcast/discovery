@@ -21,10 +21,12 @@ import java.util.UUID;
 
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonRootName;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 /**
  * The Class WorkerMetadata.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 @JsonRootName("Worker")
 public final class MetaData {
 
