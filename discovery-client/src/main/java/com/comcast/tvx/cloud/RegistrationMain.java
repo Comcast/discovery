@@ -39,7 +39,7 @@ public class RegistrationMain {
     @Argument(alias = "i", description = "IP of service to register", required = true)
     private static String ip = null;
 
-    @Argument(alias = "s", description = "Comma seperated list of services to register (e.g. \"http:80,https:443\")", required = true)
+    @Argument(alias = "s", description = "Comma separated list of services to register (e.g. \"http:80,https:443\")", required = true)
     private static String serviceSpec = null;
 
     @Argument(alias = "f", description = "Flavor of deployed application.", required = false)
@@ -69,6 +69,7 @@ public class RegistrationMain {
         try {
             Args.parse(RegistrationMain.class, args);
         } catch (IllegalArgumentException e) {
+            log.error("Illegal Arguments provided", e);
             Args.usage(RegistrationMain.class);
             System.exit(1);
 
